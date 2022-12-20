@@ -1,26 +1,15 @@
-Untitled
+Resources for Workshops
 ================
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a
-finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that
-includes both content and the output of embedded code. You can embed
-code like this:
+This is a repository to host all resources for workshops in a
+chronological order. See below for the project tree structure.
 
 ``` r
-1 + 1
+fs::dir_tree(here::here())
 ```
 
-    [1] 2
-
-You can add options to executable code like this
-
-    [1] 4
-
-The `echo: false` option disables the printing of code (only output is
-displayed).
+    /Users/myominnoo/Library/CloudStorage/GoogleDrive-labmckinnon2019@gmail.com/My Drive/Myo/github/workshops
+    ├── README.md
+    ├── README.qmd
+    ├── README.rmarkdown
+    └── workshops.Rproj
