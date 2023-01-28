@@ -9,7 +9,7 @@
 # setup -------------------------------------------------------------------
 
 ## install R packages if not installed
-packages <- c("tidyverse", "readxl")
+packages <- c("tidyverse", "readxl", "ggprism")
 for(package in packages){
   if(!package %in% rownames(installed.packages())){
     install.packages(pkgs = package, repos = "https://cran.rstudio.com/")
@@ -42,9 +42,22 @@ str(fig2)
 head(fig2)
 tail(fig2)
 
-# In current dataset, each column represents a variable. 
-# we want these columns into two columns: 
-# change the data structure from wide to long format 
+fig2 %>% 
+  # change the data structure from wide to long format
+  pivot_longer(everything(), names_to = "type") %>% 
+  # separate type into sample and cytokine
+  separate(type, into = c("sample", "cytokine"), sep = " ")
 
-
-
+mtcars %>% 
+  ggplot(aes(mpg, hp, color = factor(cyl), 
+             shape = factor(cyl), 
+             size = factor(cyl))) + 
+  geom_point() +
+  labs(
+    x = "x axis", 
+    y = "y axis", 
+    color = "cyl", 
+    shape = "cyl", 
+    size = "cyl") + 
+  ggprism::theme_prism() +
+  theme(legend.title = element_text())

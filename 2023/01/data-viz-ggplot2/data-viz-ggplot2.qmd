@@ -16,12 +16,13 @@ library(tidyverse)
 
 # About
 
-This is a one-hour workshop to understand the basics of graphs and visualizing data using `GGPLOT2` in R. This is not by any means a comprehensive course on R or data visualization, but an attempt to quickly get researchers started on creating plots using R by demonstrating an example drawn from the literature.
+This is a one-hour workshop to understand the basics of graphs and visualizing data using `GGPLOT2` in R. This is not by any means a comprehensive course on R or data visualization, but an attempt to quickly get researchers started on creating plots using R by demonstrating an relatively simple example drawn from the literature. On a technical note regarding themes, the default theme from `ggprism` is used for the purpose of creating publication-ready graphs. 
 
 # Recommended books
 
-1.  [R for data science (2e)](https://r4ds.hadley.nz/)
-2.  [Exploratory Data Analysis with R](https://bookdown.org/rdpeng/exdata/)
+1. [R for data science (2e)](https://r4ds.hadley.nz/)
+2. [Exploratory Data Analysis with R](https://bookdown.org/rdpeng/exdata/)
+3. [GGPLOT2 Cheatsheet](https://posit.co/wp-content/uploads/2022/10/data-visualization-1.pdf)
 
 # Reference & dataset:
 
@@ -42,20 +43,20 @@ Check which operating system you are using, either windows or macOS.
 3.  Right-click or double-click open the `R` file named `exercise.R`.
 4.  Run the lines below the section `setup`.
 
-```{=html}
-<!-- -->
+```{r}
+#| eval: false
+packages <- c("tidyverse", "readxl", "ggprism")
+for(package in packages){
+  if(!package %in% rownames(installed.packages())){
+    install.packages(pkgs = package, repos = "https://cran.rstudio.com/")
+  }
+  
+  if(!package %in% rownames(installed.packages())){
+    stop(paste("Package", package, "is not available"))
+  }
+}
 ```
-    ## install R packages if not installed
-    packages <- c("tidyverse")
-    for(package in packages){
-      if(!package %in% rownames(installed.packages())){
-        install.packages(pkgs = package, repos = "https://cran.rstudio.com/")
-      }
-      
-      if(!package %in% rownames(installed.packages())){
-        stop(paste("Package", package, "is not available"))
-      }
-    }
+
 
 # Getting started
 
@@ -74,10 +75,86 @@ Check which operating system you are using, either windows or macOS.
 9.  Follow up
 
 
-## Getting dataset 
+## Anatomy of a simple graph
+
+Most importantly, data is essential to creating a plot. It can be a linelist or summary numbers.
+
+Basic components also include x-y axises and labels. 
 
 ```{r}
 #| echo: false
+mtcars %>% 
+  ggplot(aes(mpg, hp)) + 
+  labs(
+    x = "x axis", 
+    y = "y axis") + 
+  ggprism::theme_prism()
+```
+
+Then, data points. 
+
+```{r}
+#| echo: false
+mtcars %>% 
+  ggplot(aes(mpg, hp)) + 
+  geom_point() +
+  labs(
+    x = "x axis", 
+    y = "y axis") + 
+  ggprism::theme_prism()
+```
+
+Then, another axis or grouping shown by color, shape, or size. When there is a grouping, you can decide whether the legend should be shown or not, and if shown, location of the legend should be considered as well. 
+
+```{r}
+#| echo: false
+mtcars %>% 
+  ggplot(aes(mpg, hp, color = factor(cyl), 
+             shape = factor(cyl), 
+             size = factor(cyl))) + 
+  geom_point() +
+  labs(
+    x = "x axis", 
+    y = "y axis", 
+    color = "legend", 
+    shape = "legend", 
+    size = "legend") + 
+  ggprism::theme_prism() +
+  theme(legend.title = element_text())
+```
+
+
+Lastly, we can decide to add a title. However, when you submit a paper, the plot itself is often separate from the title/subtitle and the legend. 
+
+```{r}
+#| echo: false
+mtcars %>% 
+  ggplot(aes(mpg, hp, color = factor(cyl), 
+             shape = factor(cyl), 
+             size = factor(cyl))) + 
+  geom_point() +
+  labs(
+    title = "A simple graph", 
+    x = "x axis", 
+    y = "y axis", 
+    color = "legend", 
+    shape = "legend", 
+    size = "legend") + 
+  ggprism::theme_prism() +
+  theme(legend.title = element_text())
+```
+
+
+
+
+
+
+## Getting dataset 
+
+To download the dataset, run the following lines of codes. 
+
+```{r}
+#| echo: true
 #| eval: false
 ## load required packages
 library(tidyverse)
@@ -91,18 +168,18 @@ download.file(url, "43856_2022_122_MOESM3_ESM.xlsx")
 
 ```
 
-# Creating Figure 2 -------------------------------------------------------
-
+Then, we read the dataset into R. 
+```{r}
 fig2 <- readxl::read_excel("43856_2022_122_MOESM3_ESM.xlsx", 
                    sheet = "Figure 2")
+```
 
-
-# first we use str(), head(), and tail() to understand the data structure
+We use str(), head(), and tail() to understand the data structure
+```{r}
 str(fig2)
 head(fig2)
 tail(fig2)
-
 ```
 
-
+In the current dataset, each column represents a cytokine variable. To create figure 2, what we want is two columns, `type` containing the names of cytokines and `value` containing their values. To do this, we need to change the data structure from wide format to long format. 
 
