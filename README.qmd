@@ -7,6 +7,6 @@ editor: source
 This is a repository to host all resources for workshops in a chronological order. See below for the project tree structure. 
 
 ```{r}
-fs::dir_tree()
+fs::dir_tree(recurse = 2)
 ```
 
