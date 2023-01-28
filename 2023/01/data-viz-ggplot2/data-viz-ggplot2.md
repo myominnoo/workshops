@@ -1,5 +1,6 @@
 Data visualization using GGPLOT2
 ================
+1/28/23
 
 # About
 
@@ -60,11 +61,25 @@ Check which operating system you are using, either windows or macOS.
 1.  Formulate your question
 2.  Identify variables (columns) needed to answer your question
 3.  Read in your data
-4.  Run str()
-5.  Look at the top and the bottom of your data
+4.  Run `str()`
+5.  Look at the top and the bottom of your data, `head()` and `tail()`
 6.  Check your “n”s
 7.  Create your plot
 8.  Challenge your solution
 9.  Follow up
 
-[^1]: modified from `Exploratory Data Analysis with R`
+## Getting dataset
+
+# Creating Figure 2 ——————————————————-
+
+fig2 \<- readxl::read_excel(“43856_2022_122_MOESM3_ESM.xlsx”, sheet =
+“Figure 2”)
+
+# first we use str(), head(), and tail() to understand the data structure
+
+str(fig2) head(fig2) tail(fig2)
+
+\`\`\`
+
+[^1]: modified from [Exploratory Data Analysis with
+    R](https://bookdown.org/rdpeng/exdata/)
