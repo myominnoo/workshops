@@ -55,7 +55,7 @@ Check which operating system you are using, either windows or macOS.
 
 # Getting started
 
-## Checklist\[^1\]: modified from `Exploratory Data Analysis with R`
+## Checklist for creating a plot[^1]
 
 1.  Formulate your question
 2.  Identify variables (columns) needed to answer your question
@@ -66,3 +66,5 @@ Check which operating system you are using, either windows or macOS.
 7.  Create your plot
 8.  Challenge your solution
 9.  Follow up
+
+[^1]: modified from `Exploratory Data Analysis with R`
