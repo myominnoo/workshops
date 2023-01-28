@@ -214,11 +214,11 @@ fig3c <- fig3_long %>%
   scale_y_log10(breaks = c(1, 10, 1e2, 1e3, 1e4, 1e5), 
                 labels = scales::label_number()) +
   geom_hline(yintercept = 1e3, color = "red", linetype = "dotted", size = 1) +
-  annotate("text", 1, 1e3, label = fig3c_med %>% filter(time == "Baseline") %>% pull(med), 
+  annotate("text", 1, 1e2, label = fig3c_med %>% filter(time == "Baseline") %>% pull(med), 
            color = "red") +
-  annotate("text", 2, 1e3, label = fig3c_med %>% filter(time == "+1h") %>% pull(med), 
+  annotate("text", 2, 1e2, label = fig3c_med %>% filter(time == "+1h") %>% pull(med), 
            color = "red") +
-  annotate("text", 3, 1e3, label = fig3c_med %>% filter(time == "+72hrs") %>% pull(med), 
+  annotate("text", 3, 1e2, label = fig3c_med %>% filter(time == "+72hrs") %>% pull(med), 
            color = "red") +
   labs(x = "", y = "IL-1α (pg/ml)") +
   ggprism::theme_prism(base_size = 10) +
@@ -246,11 +246,11 @@ fig3d <- fig3_long %>%
   scale_y_log10(breaks = c(1, 10, 1e2, 1e3, 1e4, 1e5), 
                 labels = scales::label_number()) +
   geom_hline(yintercept = 1e3, color = "red", linetype = "dotted", size = 1) +
-  annotate("text", 1, 1e3, label = fig3d_med %>% filter(time == "Baseline") %>% pull(med), 
+  annotate("text", 1, 1e2, label = fig3d_med %>% filter(time == "Baseline") %>% pull(med), 
            color = "red") +
-  annotate("text", 2, 1e3, label = fig3d_med %>% filter(time == "+1h") %>% pull(med), 
+  annotate("text", 2, 1e2, label = fig3d_med %>% filter(time == "+1h") %>% pull(med), 
            color = "red") +
-  annotate("text", 3, 1e3, label = fig3d_med %>% filter(time == "+72hrs") %>% pull(med), 
+  annotate("text", 3, 1e2, label = fig3d_med %>% filter(time == "+72hrs") %>% pull(med), 
            color = "red") +
   labs(x = "", y = "IL-1α (pg/ml)") +
   ggprism::theme_prism(base_size = 10) +
