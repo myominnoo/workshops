@@ -10,11 +10,11 @@ fs::dir_tree(recurse = 2)
 
     .
     ├── 2022
-    │   └── r3
-    │       ├── 10-tidyverse-tricks.md
-    │       ├── 10-tidyverse-tricks.qmd
-    │       ├── exercise.R
-    │       └── exercise_myo.R
+    │   ├── 04
+    │   │   └── biostats_workshop_pngimr
+    │   └── 12
+    │       ├── git-github-basics
+    │       └── r3
     ├── 2023
     │   └── 01
     │       └── data-viz-ggplot2
