@@ -711,7 +711,26 @@ library(patchwork)
 
 fig3 <- (fig3a + fig3b) / (fig3c + fig3d) + 
   plot_annotation(tag_levels = "a")
+fig3
 ```
+
+    Warning: Removed 4 rows containing missing values (`geom_point()`).
+
+    Warning: Removed 4 rows containing missing values (`geom_line()`).
+
+    Warning: Removed 1 rows containing missing values (`geom_point()`).
+
+    Warning: Removed 1 row containing missing values (`geom_line()`).
+
+    Warning: Removed 3 rows containing missing values (`geom_point()`).
+
+    Warning: Removed 3 rows containing missing values (`geom_line()`).
+
+    Warning: Removed 1 rows containing missing values (`geom_point()`).
+
+    Warning: Removed 1 row containing missing values (`geom_line()`).
+
+![](data-viz-ggplot2_files/figure-commonmark/unnamed-chunk-19-1.png)
 
 ## Now what?
 

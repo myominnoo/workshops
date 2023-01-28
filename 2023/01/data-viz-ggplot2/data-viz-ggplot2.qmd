@@ -449,6 +449,7 @@ library(patchwork)
 
 fig3 <- (fig3a + fig3b) / (fig3c + fig3d) + 
   plot_annotation(tag_levels = "a")
+fig3
 ```
 
 
