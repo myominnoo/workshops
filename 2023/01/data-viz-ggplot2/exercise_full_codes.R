@@ -1,51 +1,15 @@
----
-title: "Data visualization using GGPLOT2"
-subtitle: "by Myo Minn Oo" 
-date: "28 Jan 2023"
-format: gfm
-editor: source
-editor_options: 
-  chunk_output_type: console
----
 
-```{r}
-#| label: setup
-#| include: false
-library(tidyverse)
-```
 
-# About
+# <<<<< ============================================================= >>>>> 
+#                       Data Vizualization using GGPLOT2
+#                               EXERCISES 
+# <<<<< ============================================================= >>>>> 
 
-This is a one-hour workshop to understand the basics of graphs and visualizing data using `GGPLOT2` in R. This is not by any means a comprehensive course on R or data visualization, but an attempt to quickly get researchers started on creating plots using R by demonstrating an relatively simple example drawn from the literature. On a technical note regarding themes, the default theme from `ggprism` is used for the purpose of creating publication-ready graphs. 
 
-# Recommended books
+# setup -------------------------------------------------------------------
 
-1. [R for data science (2e)](https://r4ds.hadley.nz/)
-2. [Exploratory Data Analysis with R](https://bookdown.org/rdpeng/exdata/)
-3. [GGPLOT2 Cheatsheet](https://posit.co/wp-content/uploads/2022/10/data-visualization-1.pdf)
-
-# Reference & dataset:
-
-Mohammadi, A., Bagherichimeh, S., Choi, Y. et al. Immune parameters of HIV susceptibility in the female genital tract before and after penile-vaginal sex. Commun Med 2, 60 (2022). <https://doi.org/10.1038/s43856-022-00122-7>
-
-# Instructions:
-
-## R & RStudio
-
-Go to the link and follow the steps to install R & RStudio: <https://posit.co/download/rstudio-desktop/>.
-
-Check which operating system you are using, either windows or macOS.
-
-## Exercise files
-
-1.  Download individual files on this link: <https://github.com/myominnoo/workshops/tree/main/2023/01/data-viz-ggplot2>\
-2.  Put them in a folder.
-3.  Right-click or double-click open the `R` file named `exercise.R`.
-4.  Run the lines below the section `setup`.
-
-```{r}
-#| eval: false
-packages <- c("tidyverse", "readxl", "ggprism")
+## install R packages if not installed
+packages <- c("tidyverse", "readxl", "ggprism", "rstatix", "patchwork")
 for(package in packages){
   if(!package %in% rownames(installed.packages())){
     install.packages(pkgs = package, repos = "https://cran.rstudio.com/")
@@ -55,113 +19,12 @@ for(package in packages){
     stop(paste("Package", package, "is not available"))
   }
 }
-```
 
-
-# Getting started
-
-## Checklist for creating a plot[^1]
-
-[^1]: modified from [Exploratory Data Analysis with R](https://bookdown.org/rdpeng/exdata/)
-
-1.  Formulate your question
-2.  Identify variables (columns) needed to answer your question
-3.  Read in your data
-4.  Run `str()`
-5.  Look at the top and the bottom of your data, `head()` and `tail()`
-6.  Check your "n"s
-7.  Create your plot
-8.  Challenge your solution
-9.  Follow up
-
-
-## Anatomy of a simple graph
-
-**Most importantly, data is essential to creating a plot. It can be a linelist or summary numbers.**
-
-Basic components also include x-y axises and labels. 
-
-```{r}
-#| echo: false
-mtcars %>% 
-  ggplot(aes(mpg, hp)) + 
-  labs(
-    x = "x axis", 
-    y = "y axis") + 
-  ggprism::theme_prism()
-```
-
-Then, data points. 
-
-```{r}
-#| echo: false
-mtcars %>% 
-  ggplot(aes(mpg, hp)) + 
-  geom_point() +
-  labs(
-    x = "x axis", 
-    y = "y axis") + 
-  ggprism::theme_prism()
-```
-
-Then, another axis or grouping shown by color, shape, or size. When there is a grouping, you can decide whether the legend should be shown or not, and if shown, location of the legend should be considered as well. 
-
-```{r}
-#| echo: false
-#| warning: false
-mtcars %>% 
-  ggplot(aes(mpg, hp, color = factor(cyl), 
-             shape = factor(cyl), 
-             size = factor(cyl))) + 
-  geom_point() +
-  labs(
-    x = "x axis", 
-    y = "y axis", 
-    color = "legend", 
-    shape = "legend", 
-    size = "legend") + 
-  ggprism::theme_prism() +
-  theme(legend.title = element_text())
-```
-
-
-Lastly, we can decide to add a title. However, when you submit a paper, the plot itself is often separate from the title/subtitle and the legend. 
-
-```{r}
-#| echo: false
-#| warning: false
-mtcars %>% 
-  ggplot(aes(mpg, hp, color = factor(cyl), 
-             shape = factor(cyl), 
-             size = factor(cyl))) + 
-  geom_point() +
-  labs(
-    title = "A simple graph", 
-    x = "x axis", 
-    y = "y axis", 
-    color = "legend", 
-    shape = "legend", 
-    size = "legend") + 
-  ggprism::theme_prism() +
-  theme(legend.title = element_text())
-```
-
-
-
-
-
-
-## Getting dataset 
-
-> Starting this point, you might want to create a new R file, copy/paste the codes there and run them. 
-
-To download the dataset, run the following lines of codes. 
-
-```{r}
-#| echo: true
-#| eval: false
 ## load required packages
 library(tidyverse)
+
+## clear workspace
+rm(list = ls())
 
 
 # Getting dataset ---------------------------------------------------------
@@ -170,28 +33,17 @@ library(tidyverse)
 url <- "https://static-content.springer.com/esm/art%3A10.1038%2Fs43856-022-00122-7/MediaObjects/43856_2022_122_MOESM3_ESM.xlsx"
 download.file(url, "43856_2022_122_MOESM3_ESM.xlsx")
 
-```
 
+# Creating Figure 2 -------------------------------------------------------
 
-## Creating Figure 2 
-
-First, we need to read the dataset into R. 
-```{r}
 fig2_ds <- readxl::read_excel("43856_2022_122_MOESM3_ESM.xlsx", 
                    sheet = "Figure 2")
-```
 
-We use str(), head(), and tail() to understand the data structure
-```{r}
+# first we use str(), head(), and tail() to understand the data structure
 str(fig2_ds)
 head(fig2_ds)
 tail(fig2_ds)
-summary(fig2_ds)
-```
 
-In the current dataset, each column represents a cytokine variable. To create figure 2, what we want is two columns, `type` containing the names of cytokines and `value` containing their values. To do this, we need to change the data structure from wide format to long format. 
-
-```{r}
 fig2_long <- fig2_ds %>% 
   # change the data structure from wide to long format
   pivot_longer(everything(), names_to = "type") %>% 
@@ -210,11 +62,8 @@ fig2_long <- fig2_ds %>%
       "MIP-1β", "MIP-3α", "E-cadherin", "MMP9" 
     ))
   )
-```
 
-We need to calculate p-values for comparing sample type (CVS versus semen) within each cytokine.
 
-```{r}
 fig2_pvalues <- fig2_long %>% 
   rstatix::group_by(cytokine) %>% 
   rstatix::wilcox_test(value ~ sample, paired = FALSE) %>% 
@@ -242,28 +91,20 @@ fig2 <- fig2_long %>%
   )
 
 fig2
-```
 
-## Creating Figure 3 
 
-We read the dataset for figure 3 into R. 
 
-```{r}
+
+
+# Creating Figure 3 -------------------------------------------------------
+
 fig3_ds <- readxl::read_excel("43856_2022_122_MOESM3_ESM.xlsx", 
-                   sheet = "Figure 3 A-D")
-```
+                              sheet = "Figure 3 A-D")
 
-Same as above, we check our dataset and change the data structure. 
-
-
-```{r}
-# check dataset 
 str(fig3_ds)
 head(fig3_ds)
 tail(fig3_ds)
-summary(fig3_ds)
 
-# change from wide to long format 
 fig3_long <- fig3_ds %>% 
   select(sex = `Sex group`, starts_with("IP10"), starts_with("IP-10"), 
          starts_with("IL-1a")) %>% 
@@ -278,12 +119,8 @@ fig3_long <- fig3_ds %>%
     ), 
     time = factor(time, levels = c("Baseline", "+1h", "+72hrs"))
   )
-```
 
-We still have all groups (IP-10 and IL-1α) as well as sex group (condom or condomless). So let's calculate paired-wised wilcoxon tests for comparing time points within each cytokine in each sex group. 
 
-```{r}
-# calculate p-values 
 fig3_pvalues <- fig3_long %>% 
   rstatix::group_by(sex, cytokine) %>% 
   rstatix::wilcox_test(value ~ time, paired = TRUE) %>% 
@@ -291,17 +128,13 @@ fig3_pvalues <- fig3_long %>%
   mutate(label = ifelse(p < 0.05, 
                         ifelse(p < 0.01, 
                                ifelse(p < 0.001, "***", "**"), "*"), "ns"))
-# calculate median values to display on the graph
+
 fig3_med <- fig3_long %>% 
   group_by(sex, cytokine, time) %>% 
   summarize(med = median(value, na.rm = TRUE), 
             med = round(med, 1))
-```
 
-### Figure 3a
-Let's filter `IP-10` cytokine in the sex group `codnomless` and create `figure 3a`. 
 
-```{r}
 fig3a_pvalues <- fig3_pvalues%>% 
   filter(sex == "codnomless", cytokine == "IP-10")
 fig3a_med <- fig3_med %>% 
@@ -331,11 +164,8 @@ fig3a <- fig3_long %>%
     xmin = "xmin", xmax = "xmax"
   )
 fig3a
-```
 
-### Figure 3b
-Likewise, `Figure 3b`
-```{r}
+
 fig3b_pvalues <- fig3_pvalues%>% 
   filter(sex == "condom", cytokine == "IP-10")
 fig3b_med <- fig3_med %>% 
@@ -365,12 +195,9 @@ fig3b <- fig3_long %>%
     xmin = "xmin", xmax = "xmax"
   )
 fig3b
-```
 
 
-### Figure 3c
-Likewise, `Figure 3c`
-```{r}
+
 fig3c_pvalues <- fig3_pvalues%>% 
   filter(sex == "codnomless", cytokine == "IL-1α")
 fig3c_med <- fig3_med %>% 
@@ -401,12 +228,9 @@ fig3c <- fig3_long %>%
     xmin = "xmin", xmax = "xmax"
   )
 fig3c
-```
 
 
-### Figure 3d
-Likewise, `Figure 3d`
-```{r}
+
 fig3d_pvalues <- fig3_pvalues%>% 
   filter(sex == "condom", cytokine == "IL-1α")
 fig3d_med <- fig3_med %>% 
@@ -436,35 +260,22 @@ fig3d <- fig3_long %>%
     xmin = "xmin", xmax = "xmax"
   )
 fig3d
-```
 
 
 
-### Compiling all figues 
-
-We use the package `patchwork`. Similar plotlayouts can also be created using other packages like `cowplots`.
-
-```{r}
 library(patchwork)
 
 fig3 <- (fig3a + fig3b) / (fig3c + fig3d) + 
   plot_annotation(tag_levels = "a")
-```
 
 
-## Now what?
 
-We have our figures so we can save these figure as picture format like tiff, png, or transfer to word or powerpoint or any other formats. 
 
-Below is a demonstration of how to properly save figures as `tiff`. 
+# Saving figures ----------------------------------------------------------
 
-```{r}
 ggsave("fig2_exercise.tiff", fig2, 
        width = 10, height = 6, compression = "lzw")
 ggsave("fig3_exercise.tiff", fig3,
        width = 10, height = 7, compression = "lzw")
-```
-
-
-
+ 
 
