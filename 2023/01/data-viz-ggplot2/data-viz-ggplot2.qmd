@@ -13,6 +13,66 @@ editor_options:
 library(tidyverse)
 ```
 
+# About
+
+This is a one-hour workshop to understand the basics of graphs and visualizing data using `GGPLOT2` in R. This is not by any means a comprehensive course on R or data visualization, but an attempt to quickly get researchers started on creating plots using R by demonstrating an example drawn from the literature. 
+
+
+# Recommended books
+
+1. [R for data science (2e)](https://r4ds.hadley.nz/)
+2. [Exploratory Data Analysis with R](https://bookdown.org/rdpeng/exdata/)
+
 # Reference & dataset:
 
-Mohammadi, A., Bagherichimeh, S., Choi, Y. et al. Immune parameters of HIV susceptibility in the female genital tract before and after penile-vaginal sex. Commun Med 2, 60 (2022). [https://doi.org/10.1038/s43856-022-00122-7]()
+Mohammadi, A., Bagherichimeh, S., Choi, Y. et al. Immune parameters of HIV susceptibility in the female genital tract before and after penile-vaginal sex. Commun Med 2, 60 (2022). [https://doi.org/10.1038/s43856-022-00122-7](https://doi.org/10.1038/s43856-022-00122-7)
+
+# Instructions: 
+
+## R & RStudio
+
+Go to the link and follow the steps to install R & RStudio: [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/). 
+
+Check which operating system you are using, either windows or macOS. 
+
+## Exercise files
+
+1. Download individual files on this link: [https://github.com/myominnoo/workshops/tree/main/2023/01/data-viz-ggplot2](https://github.com/myominnoo/workshops/tree/main/2023/01/data-viz-ggplot2)   
+2. Put them in a folder. 
+3. Right-click or double-click open the `R` file named `exercise.R`.
+4. Run the lines below the section `setup`. 
+
+```
+## install R packages if not installed
+packages <- c("tidyverse")
+for(package in packages){
+  if(!package %in% rownames(installed.packages())){
+    install.packages(pkgs = package, repos = "https://cran.rstudio.com/")
+  }
+  
+  if(!package %in% rownames(installed.packages())){
+    stop(paste("Package", package, "is not available"))
+  }
+}
+```
+
+
+# Getting started
+
+## Checklist[^1]: modified from `Exploratory Data Analysis with R`
+
+1. Formulate your question
+2. Identify variables (columns) needed to answer your question
+3. Read in your data
+4. Run str()
+5. Look at the top and the bottom of your data
+6. Check your “n”s
+7. Create your plot
+8. Challenge your solution
+9. Follow up
+
+
+
+
+
+
