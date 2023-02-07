@@ -43,6 +43,7 @@ fig2_ds <- readxl::read_excel("43856_2022_122_MOESM3_ESM.xlsx",
 str(fig2_ds)
 head(fig2_ds)
 tail(fig2_ds)
+summary(fig2_ds)
 
 fig2_long <- fig2_ds %>% 
   # change the data structure from wide to long format
@@ -64,7 +65,32 @@ fig2_long <- fig2_ds %>%
   )
 
 
+fig2_pvalues <- fig2_long %>% 
+  rstatix::group_by(cytokine) %>% 
+  rstatix::wilcox_test(value ~ sample, paired = FALSE) %>% 
+  rstatix::add_x_position(x = "cytokine", dodge = 0.9) %>% # dodge must match points
+  mutate(label = ifelse(p < 0.05, 
+                        ifelse(p < 0.01, 
+                               ifelse(p < 0.001, "***", "**"), "*"), "ns"))
 
+
+fig2_long %>% 
+  ## initiate a ggplot with specified x and y axises
+  ggplot(aes(x = cytokine, y = value)) + 
+  ## create jittered points with specified width
+  geom_jitter(aes(color = sample), position = position_jitterdodge(0.25)) +
+  scale_color_manual(values = c("red", "blue")) +
+  ## change y axis limit 
+  scale_y_continuous(breaks = c(-2, 0, 2, 4, 6, 8), limits = c(-2, 8)) +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  labs(x = "", y = "Log 10 [immune factors, pg/ml]") + 
+  ## add prism theme 
+  ggprism::theme_prism(base_size = 10) +
+  theme(legend.position = "top") +
+  ggprism::add_pvalue(
+    fig2_pvalues, y = c(3.8, 3.8, 6.5, 4, 5.8, 6, 6, 5.5, 5.5, 7.8, 7.8), 
+    xmin = "xmin", xmax = "xmax"
+  )
 
 
 
