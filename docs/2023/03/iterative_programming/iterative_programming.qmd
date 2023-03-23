@@ -1,0 +1,122 @@
+---
+title: "Iterative Programming with apply functions and an introduction to Purrr"
+subtitle: "by Myo Minn Oo" 
+date: "`r Sys.Date()`"
+format: gfm
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+```
+
+
+# What are apply functions? 
+
+A faster alternative to loops in R. 
+
+They works on various types of objects, data.frame, list, vector.
+
+- apply()
+- lapply()
+- sapply()
+- mapply()
+
+
+## Change all month names `month.name` to lower case or upper case. 
+
+```{r}
+sapply(month.name, tolower)
+sapply(month.name, toupper)
+
+lapply(month.name, tolower)
+lapply(month.name, toupper)
+```
+
+
+## How many observations are there in each column of `infert`. 
+
+```{r}
+sapply(infert, length)
+lapply(infert, length)
+
+sapply(infert, ncol)
+sapply(infert, nrow)
+```
+
+
+## Which values are missing in `airquality`. 
+
+```{r}
+sapply(airquality, is.na)
+lapply(airquality, is.na)
+```
+
+
+## How many observations are missing in `airquality`.
+
+```{r}
+get_na <- function(x) {
+	sum(is.na(x))
+}
+sapply(airquality, get_na)
+sapply(airquality, function(x) sum(is.na(x)))
+```
+
+
+## Take a vector of 1 to 10 and repeat each value 20 times. 
+
+```{r}
+x <- 1:10
+sapply(x, rep, times = 20)
+lapply(x, rep, times = 20)
+```
+
+
+## Sum values by rows and columns in `iris`. 
+
+```{r}
+iris2 <- iris[, -5]
+apply(iris2, 1, sum) # row-wise sum
+apply(iris2, 2, sum) # column-wise sum
+```
+
+## Sum vectors based on their indices. 
+
+```{r}
+x <- 1:10
+y <- 1:10
+mapply(`+`, x, y)
+mapply(paste, x, y)
+```
+
+
+## How to convert a list to a vector
+```{r}
+lapply(infert, length) 
+lapply(infert, length) %>% 
+	do.call(c, .)
+```
+	
+
+
+
+# Functions from purrr
+
+
+
+```{r}
+library(purrr)
+
+map(month.name, tolower)
+map_chr(month.name, tolower)
+
+map(infert, length)
+
+map(airquality, is.na)
+```
+

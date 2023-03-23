@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Entering tidyverse - data transformation</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="libs/shareon/shareon.min.js"></script>
+    <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
+    <link href="libs/xaringanExtra-extra-styles/xaringanExtra-extra-styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="assets/css/custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+class: title-slide, center, middle
+
+# Entering tidyverse - data transformation
+
+Modified from Slides 7 -- Data Wrangling with `dplyr`
+
+Credits: UO Psych R Bootcamp
+
+---
+background-image: url(images/hex/tidyverse.png)
+background-position: 90% 5%
+background-size: 10%
+
+# Tidyverse 
+
+There are a few key ideas to be aware of about how the tidyverse works in general before we dive into `dplyr`
+
+--
+
+1. Packages are designed to be like **grammars** for their task. You can string these grammatical elements together to form more complex statements, just like with language.
+
+--
+
+1. The first argument of (basically) every function is `data`. This is very handy, especially when it comes to piping.
+
+--
+
+1. Variable names are usually not quoted (read more [here](https://tidyselect.r-lib.org/reference/language.html))
+
+---
+background-image: url(images/hex/palmerpenguins.png)
+background-position: 90% 5%
+background-size: 10%
+
+# Palmer penguins
+
+
+```r
+library(palmerpenguins)
+glimpse(penguins)
+```
+
+```
+## Rows: 344
+## Columns: 8
+## $ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel…
+## $ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse…
+## $ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, …
+## $ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, …
+## $ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186…
+## $ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, …
+## $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male…
+## $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007…
+```
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# dplyr
+
+`dplyr` is a grammar of data manipulation, providing a consistent set of core verbs that help you solve the most common data manipulation challenges
+
+--
+***
+
+**Manipulating observations**
+
++ `filter()` picks cases based on their values.
+
++ `arrange()` changes the ordering of the rows.
+
+--
+***
+
+**Manipulating variables**
+
++ `select()` picks variables based on their names.
+
++ `mutate()` adds new variables that are functions of existing variables
+
+--
+***
+
+**Summarizing data**
+
++ `summarise()` reduces multiple values down to a single summary.
+
+
+---
+background-image: url(images/hex/magrittr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# A review of pipes
+
+`x %&gt;% f(y)` is equivalent to `f(x, y)`
+
+--
+***
+
+R Code 
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Gentoo") %&gt;% 
+  select(bill_length_mm, bill_depth_mm) %&gt;% 
+  arrange(desc(bill_length_mm))
+```
+
+--
+
+Translated into English
+
+
+```r
+start with penguins data *AND THEN*
+  filter to include only observations from Gentoo penguins *AND THEN*
+  select only the columns `bill_length_mm` and `bill_depth_mm` *AND THEN*
+  arrange observations by descending order of `bill_length_mm`
+```
+
+--
+***
+Read more on piping: [https://magrittr.tidyverse.org/reference/pipe.html](https://magrittr.tidyverse.org/reference/pipe.html)
+
+
+---
+background-image: url(images/hex/magrittr.png)
+background-position: 90% 5%
+background-size: 10%
+
+
+# Manipulating observations &lt;br&gt; (rows)
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `filter()`
+
+### Subset observations (rows) with `filter()`
+
+&lt;img src="images/dplyr/filter.png" width="400" /&gt;
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `filter()`
+
+&lt;img src="images/dplyr_filter.jpg" width="9099" /&gt;
+
+.footnote[Artwork by [@allison_horst](https://twitter.com/allison_horst)]
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `filter()`
+
+### Logical operators
+
+&lt;img src="images/dplyr/logical_operators.png" width="2472" /&gt;
+
+.footnote[Source: [R for Data Science](https://r4ds.had.co.nz/transform.html#filter-rows-with-filter)]
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `filter()`
+
+### Comparisons
+
+
+
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Operator &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Description &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Usage &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt; &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; less than &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; x &amp;lt; y &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;= &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; less than or equal to &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; x &amp;lt;= y &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &amp;gt; &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; greater than &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; x &amp;gt; y &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &amp;gt;= &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; greater than or equal to &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; x &amp;gt;= y &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; == &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; exactly equal to &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; x == y &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; != &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; not equal to &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; x != y &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; %in% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; group membership &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; x %in% y &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; is.na &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; is missing &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; is.na(x) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; !is.na &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; is not missing &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; !is.na(x) &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+.footnote[Source: [Alison Hill](https://share-blogdown.netlify.app/slides/02-slides.html#15)]
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+
+# `filter()`
+
+.panelset[
+
+.panel[.panel-name[Arguments]
+
+
+```r
+filter(.data, ...)
+```
+
+**.blue[.data]** .blue[= a data frame or tibble]
+
+**.red[. . .]**  .red[= Expressions that return a logical value, and are defined in terms of the variables in .blue[.data]. &lt;br&gt;&lt;br&gt; If multiple expressions are included, they are combined with the &amp; operator. Only rows for which all conditions evaluate to TRUE are kept. ]
+]
+
+.panel[.panel-name[Example 1]
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Gentoo" &amp; bill_length_mm &gt; 55)
+```
+
+```
+## # A tibble: 3 × 8
+##   species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+## 1 Gentoo  Biscoe           59.6            17               230        6050
+## 2 Gentoo  Biscoe           55.9            17               228        5600
+## 3 Gentoo  Biscoe           55.1            16               230        5850
+## # ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+]
+
+.panel[.panel-name[Example 2]
+
+
+```r
+penguins %&gt;% 
+  filter(species %in% c("Adelie", "Gentoo"),
+         island %in% c("Dream", "Torgersen"))
+```
+
+```
+## # A tibble: 108 × 8
+##    species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##    &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+##  1 Adelie  Torgersen           39.1          18.7               181        3750
+##  2 Adelie  Torgersen           39.5          17.4               186        3800
+##  3 Adelie  Torgersen           40.3          18                 195        3250
+##  4 Adelie  Torgersen           NA            NA                  NA          NA
+##  5 Adelie  Torgersen           36.7          19.3               193        3450
+##  6 Adelie  Torgersen           39.3          20.6               190        3650
+##  7 Adelie  Torgersen           38.9          17.8               181        3625
+##  8 Adelie  Torgersen           39.2          19.6               195        4675
+##  9 Adelie  Torgersen           34.1          18.1               193        3475
+## 10 Adelie  Torgersen           42            20.2               190        4250
+## # ℹ 98 more rows
+## # ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+]
+]
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `arrange()`
+
+### Arrange rows by column values with `arrange()`
+
+&lt;img src="images/dplyr/arrange.png" width="400" /&gt;
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `arrange()`
+
+.panelset[
+
+.panel[.panel-name[Arguments]
+
+
+```r
+arrange(.data, ...)
+```
+
+**.blue[.data]** .blue[= a data frame or tibble]
+
+**.red[. . .]**  .red[= Variables to sort by. Use `desc()` to sort a variable in descending order.]
+]
+
+.panel[.panel-name[Example 1]
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Gentoo" &amp; bill_length_mm &gt; 55) %&gt;% 
+  arrange(body_mass_g)
+```
+
+```
+## # A tibble: 3 × 8
+##   species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+## 1 Gentoo  Biscoe           55.9            17               228        5600
+## 2 Gentoo  Biscoe           55.1            16               230        5850
+## 3 Gentoo  Biscoe           59.6            17               230        6050
+## # ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+]
+
+.panel[.panel-name[Example 2]
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Gentoo" &amp; bill_length_mm &gt; 55) %&gt;% 
+  arrange(desc(body_mass_g))
+```
+
+```
+## # A tibble: 3 × 8
+##   species island bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+## 1 Gentoo  Biscoe           59.6            17               230        6050
+## 2 Gentoo  Biscoe           55.1            16               230        5850
+## 3 Gentoo  Biscoe           55.9            17               228        5600
+## # ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+]
+]
+
+# Manipulating variables &lt;br&gt; (columns)
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `select()`
+
+### Select columns with `select()`
+
+&lt;img src="images/dplyr/select.png" width="400" /&gt;
+
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `select()`
+
+.panelset[
+
+.panel[.panel-name[Arguments]
+
+
+```r
+select(.data, ...)
+```
+
+**.blue[.data]** .blue[= a data frame or tibble]
+
+**.red[. . .]**  .red[= One or more unquoted expressions separated by commas. &lt;br&gt;&lt;br&gt; Variable names can be used as if they were positions in the data frame, so expressions like `x:y` can be used to select a range of variables.]
+]
+
+.panel[.panel-name[Example 1]
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Gentoo" &amp; bill_length_mm &gt; 55) %&gt;% 
+  arrange(body_mass_g) %&gt;% 
+  select(species:bill_depth_mm)
+```
+
+```
+## # A tibble: 3 × 4
+##   species island bill_length_mm bill_depth_mm
+##   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+## 1 Gentoo  Biscoe           55.9            17
+## 2 Gentoo  Biscoe           55.1            16
+## 3 Gentoo  Biscoe           59.6            17
+```
+
+]
+
+.panel[.panel-name[Example 2]
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Gentoo" &amp; bill_length_mm &gt; 55) %&gt;% 
+  arrange(body_mass_g) %&gt;% 
+  select(species, starts_with("bill_"))
+```
+
+```
+## # A tibble: 3 × 3
+##   species bill_length_mm bill_depth_mm
+##   &lt;fct&gt;            &lt;dbl&gt;         &lt;dbl&gt;
+## 1 Gentoo            55.9            17
+## 2 Gentoo            55.1            16
+## 3 Gentoo            59.6            17
+```
+]
+
+.panel[.panel-name[Example 3]
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Gentoo" &amp; bill_length_mm &gt; 55) %&gt;% 
+  arrange(body_mass_g) %&gt;% 
+  select(ends_with("_mm"))
+```
+
+```
+## # A tibble: 3 × 3
+##   bill_length_mm bill_depth_mm flipper_length_mm
+##            &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;
+## 1           55.9            17               228
+## 2           55.1            16               230
+## 3           59.6            17               230
+```
+]
+
+]
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# Selection helpers
+
+Selection helpers work in concert with `select()` to make it easier to select specific groups of variables.
+
+--
+
+Here are some commonly useful ones
+
+***
+
+`everything()`: Matches all variables.
+
+`last_col()`: Select last variable, possibly with an offset.
+
+`starts_with()`: Starts with a prefix.
+
+`ends_with()`: Ends with a suffix.
+
+`contains()`: Contains a literal string.
+
+.footnote[🔗 https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html#overview-of-selection-features]
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `mutate()`
+
+### Create (or overwrite) variables with `mutate()`
+
+&lt;img src="images/dplyr/mutate.png" width="400" /&gt;
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `mutate()`
+
+.center[
+&lt;img src="images/dplyr_mutate.png" width="75%" /&gt;
+]
+
+.footnote[Artwork by [@allison_horst](https://twitter.com/allison_horst)]
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `mutate()`
+
+.panelset[
+
+.panel[.panel-name[Arguments]
+
+
+```r
+mutate(.data, ...)
+```
+
+**.blue[.data]** .blue[= a data frame or tibble]
+
+**.red[. . .]**  .red[=  Name-value pairs. The name gives the name of the column in the output.]
+
+]
+
+.panel[.panel-name[Example 1]
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Gentoo" &amp; bill_length_mm &gt; 55) %&gt;% 
+  arrange(body_mass_g) %&gt;% 
+  select(starts_with("bill_")) %&gt;% 
+  mutate(bill_length_m = bill_length_mm/1000)
+```
+
+```
+## # A tibble: 3 × 3
+##   bill_length_mm bill_depth_mm bill_length_m
+##            &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+## 1           55.9            17        0.0559
+## 2           55.1            16        0.0551
+## 3           59.6            17        0.0596
+```
+
+]
+
+.panel[.panel-name[Example 2]
+
+
+```r
+penguins %&gt;% 
+  filter(species == "Gentoo" &amp; bill_length_mm &gt; 55) %&gt;% 
+  arrange(body_mass_g) %&gt;% 
+  select(starts_with("bill_")) %&gt;% 
+  mutate(bill_length_mm = as.character(bill_length_mm))
+```
+
+```
+## # A tibble: 3 × 2
+##   bill_length_mm bill_depth_mm
+##   &lt;chr&gt;                  &lt;dbl&gt;
+## 1 55.9                      17
+## 2 55.1                      16
+## 3 59.6                      17
+```
+]
+
+]
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# Summarizing data
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `summarize()`
+
+`summarize()` reduces your raw data frame into to a smaller summary data frame that only contains the variables resulting from the **summary functions** that you specify within `summarize()`
+
+&lt;img src="images/dplyr/summarize.png" width="40%" /&gt;
+
+--
+***
+
+Summary functions take vectors as inputs and return single values as outputs
+
+&lt;img src="images/dplyr/summary_function.png" width="533" /&gt;
+
+Common examples are `mean()`, `sd()`, `max()`, `min()`, `sum()`, etc...
+
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `summarize()`
+
+.panelset[
+
+.panel[.panel-name[Arguments]
+
+
+```r
+summarize(.data, ...)
+```
+
+**.blue[.data]** .blue[= a data frame or tibble]
+
+**.red[. . .]**  .red[=  Name-value pairs of summary functions. The name will be the name of the variable in the result.]
+
+]
+
+.panel[.panel-name[Example]
+
+
+```r
+penguins %&gt;% 
+  summarize(mean_bill_length = mean(bill_length_mm, na.rm = TRUE),
+            max_flipper_length = max(flipper_length_mm, na.rm = TRUE))
+```
+
+```
+## # A tibble: 1 × 2
+##   mean_bill_length max_flipper_length
+##              &lt;dbl&gt;              &lt;int&gt;
+## 1             43.9                231
+```
+
+]
+
+]
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `group_by()`
+
+`group_by()` creates groups based on one or more variables in the data, and this affects any downstream operations -- most commonly, `summarize()`
+
+&lt;img src="images/dplyr/group_by.png" width="50%" /&gt;
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `group_by()`
+
+What happens if we combine `group_by()` and `summarize()`? 
+
+&lt;img src="images/dplyr/group_by_summarize.png" width="75%" /&gt;
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+
+# `summarize()`
+
+Let's see a couple examples of how we can combine `group_by()` and `summarize()`
+
+.panelset[
+
+.panel[.panel-name[Example 1]
+
+
+```r
+penguins %&gt;% 
+  group_by(species) %&gt;% 
+  summarize(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))
+```
+
+```
+## # A tibble: 3 × 2
+##   species   mean_bill_length
+##   &lt;fct&gt;                &lt;dbl&gt;
+## 1 Adelie                38.8
+## 2 Chinstrap             48.8
+## 3 Gentoo                47.5
+```
+
+]
+
+.panel[.panel-name[Example 2]
+
+
+```r
+penguins %&gt;% 
+  group_by(species, island) %&gt;% 
+  summarize(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))
+```
+
+```
+## `summarise()` has grouped output by 'species'. You can override using the
+## `.groups` argument.
+```
+
+```
+## # A tibble: 5 × 3
+## # Groups:   species [3]
+##   species   island    mean_bill_length
+##   &lt;fct&gt;     &lt;fct&gt;                &lt;dbl&gt;
+## 1 Adelie    Biscoe                39.0
+## 2 Adelie    Dream                 38.5
+## 3 Adelie    Torgersen             39.0
+## 4 Chinstrap Dream                 48.8
+## 5 Gentoo    Biscoe                47.5
+```
+
+]
+
+
+]
+
+
+---
+background-image: url(images/hex/dplyr.png)
+background-position: 90% 5%
+background-size: 10%
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

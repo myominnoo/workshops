@@ -1,0 +1,909 @@
+---
+title: "Introduction to Research Data Analysis"
+author: Myo Minn Oo
+institute: PNGIMR
+date: "`r Sys.Date()`"
+output:
+  beamer_presentation: 
+    theme: AnnArbor
+    slide_level: 2
+    colortheme: beaver
+    fig_caption: yes
+    highlight: zenburn
+    fig_width: 4
+    fig_height: 3
+classoption: "aspectratio=169"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(root.dir = '/slides', echo = FALSE)
+library(magrittr)
+library(tidyverse)
+library(janitor)
+```
+
+
+
+## Outline
+
+\tableofcontents[hideallsubsections]
+
+## GitHub 
+
+This slide and R Handout are available to download from GitHub. 
+
+https://github.com/myominnoo/biostats_workshop_pngimr/blob/main/slides/slides.pdf
+
+https://github.com/myominnoo/biostats_workshop_pngimr/blob/main/slides/rhandout.pdf
+
+# Research Questions
+
+## A Good Research Question
+
+**FINER**
+
+-   Feasible
+-   Interesting
+-   Novel
+-   Ethical
+-   Relevant
+
+## Our Study Outline - SARS-COV-2 Prevalence Study
+
+**Research Question**: Among samples tested for COVID-19 infection at PNGIMR lab, what are the positivity rates of COVID-19 infection and predictors for being positive?
+
+**Study design**: cross-sectional study
+
+**Subjects**: samples that were tested RT-PCR for COVID-19 infection between September 2021 and March 2022
+
+**Outcome/Dependent variable**: being positive on RT-PCR
+
+**Predictors/Independent variable**: age, sex, residence, being symptomatic, previous contact, travel history, COVID-19 vaccination status, vaccination dose, number of symptoms
+
+**Potential confounders**: reasons for testing
+
+## Type of Study Designs
+
+-   Cross-sectional
+-   Cohort
+-   Case-control
+-   Randomized control trials (RCT)
+
+
+# Introduction to Statistics
+
+## What is statistics?
+
+-   Statistics - the practice and study of collecting and analyzing data
+-   Summary statistics - understanding or summary of some data
+
+**What can statistics do?**
+
+-   How likely is a sample to be positive on a PCR test? Are samples more likely to be positive if people were tested at different clinic or purpose?
+-   What is the risk of dying if a person tested positive for COVID-19 infection? What interventions can we do to reduce the risk of death?
+-   A/B tests: which ads or adovacy method is more effective in getting people to test for COVID-19?
+
+## What **can't** statistics do?
+
+-   *Why is antivax working?*
+
+Instead
+
+-   Are people who were tested for COVID-19 favorable toward COVID-19 vaccination?
+
+But ...
+
+-   Even so this won't tell us if more testing would lead to more vaccination.
+
+## Types of Statistics
+
+::: columns
+::: column
+**Descriptive**
+
+-   describe and summarize data
+
+*Examples*:
+
+-   50% of samples tested positive
+-   25% of people tested for COVID-19 were symptomatic
+-   5% died during hospitalization
+:::
+
+::: column
+**Inferential**
+
+-   Use a sample of data to make inferences about a larger population
+
+*Examples*:
+
+-   What percent of test samples were tested positive?
+-   etc
+:::
+:::
+
+## Types of data
+
+::: columns
+::: column
+**Numeric (quantitative)**
+
+-   Continuous (measured)
+    -   age, weight, height
+    -   time from sample collection to date of test result reported
+-   Discrete (counted)
+    -   number of contact persons
+    -   number of symptoms
+:::
+
+::: column
+**Categorical (Qualitative)**
+
+-   Nominal (Unordered)
+    -   sex (male / female)
+    -   province where patients live, country of origin
+-   Ordinal (Ordered)
+    -   Dose of vaccination: 0, 1, 2+ doses
+    -   likert scale: strong diagree, disagree, neutral, agree, strongly agree
+:::
+:::
+
+## Categorical data represented as numbers
+
+::: columns
+::: column
+**Nominal (unordered)**
+
+-   sex: male / female -\> 1 / 2
+-   country of origin (1, 2, 3, ... )
+:::
+
+::: column
+**Ordinal (ordered)**
+
+-   Dose of vaccination: 0, 1, 2
+-   likert scale: 1, 2, 3, 4, 5
+:::
+:::
+
+
+## Why does data type matter?
+
+::: columns
+::: column
+**Summary Statistics**
+
+```{r echo = TRUE}
+mtcars %>% 
+    summarize(avg_speed = mean(mpg))
+```
+:::
+::: column
+**Plot**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+mtcars %>% 
+    ggplot(aes(mpg, wt)) + 
+    geom_point(color = "blue") + 
+    xlab("Car speed") + 
+    ylab("Car weight") + 
+    theme_classic() 
+```
+:::
+:::
+
+## Why does data type matter?
+
+::: columns
+::: column
+**Summary Statistics**
+
+```{r echo = TRUE}
+mtcars %>% 
+    tabyl(gear) %>% 
+    adorn_pct_formatting()
+```
+:::
+
+::: column
+**Plot**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+mtcars %>% 
+    ggplot(aes(x = gear)) + 
+    geom_bar(fill = "blue") +
+    theme_classic() + 
+    theme(legend.position = "bottom")
+```
+:::
+:::
+
+# Introduction to R and RStudio
+
+## See R Handout! 
+
+::: columns
+::: column
+Let's practice R!
+::: 
+::: 
+
+# Descriptive Statistics: Number Summary
+
+## `mtcars` 
+
+```{r echo=TRUE}
+mtcars 
+```
+
+## How is `mpg` distributed in this dataset?
+
+::: columns
+::: column
+-   What is a typical value?
+-   Where is the center of the data?
+    -   mean
+    -   median
+    -   mode
+::: 
+::: column
+```{r echo=TRUE}
+mtcars %>% 
+    select(mpg)
+```
+::: 
+::: 
+
+## Measure of center: mean
+
+$$mean\_mpg = \frac{21.0 + 21.0 + 22.8 + ... } {32} = 20.09062$$
+
+```{r echo=TRUE}
+mtcars %>% 
+    summarize(avg_speed = mean(mpg))
+```
+
+
+## Measure of center: median
+
+::: columns
+::: column
+1. sort the numbers in ascending order 
+2. if odd number, take the middle one 
+3. if even number, add the middle twos and divide the summation by 2. 
+```{r echo=TRUE}
+mtcars %>% 
+    arrange(mpg) %>% 
+    unlist(mpg, use.names = FALSE) %>% 
+    .[16:17] 
+```
+$$median\_mpg = \frac{19.2+19.2} {2} = 19.2$$
+::: 
+::: column
+```{r echo=TRUE}
+mtcars %>% 
+    summarize(median_mpg = median(mpg))
+```
+::: 
+::: 
+
+## Measure of center: mode
+```{r echo = TRUE}
+mtcars %>% 
+    count(mpg, sort = TRUE) 
+```
+
+## Measure of Spread: standard deviation
+
+$$sd\_mpg = \sqrt{\frac{\sum{(x_i - \mu)^2}} {n - 1}}$$
+```{r echo = TRUE}
+mtcars %>% 
+    summarize(sd_mpg = sd(mpg))
+```
+
+## Measure of Spread: Interquartile Range
+
+- points that equally divide your data into four quartiles 
+- first quartile, Q1 = 25% 
+- second quartile, Q2 = 50% ~ median 
+- thrid quartile, Q3 = 75% 
+- interquartile Range (Q1, Q3)
+
+```{r echo = TRUE}
+mtcars %>% 
+    summarise(median = median(mpg), 
+              q1 = quantile(mpg, probs = 0.25), 
+              q3 = quantile(mpg, probs = 0.75))
+```
+
+## Other measures of spread: range
+
+* minimum and maximum values 
+* useful for checking invalid values 
+
+```{r echo = TRUE}
+mtcars %>% 
+    summarise(mean = mean(mpg), 
+              minimum = min(mpg), 
+              maximum = max(mpg))
+```
+
+
+## Distributions
+
+![](images/distributions.jpg){width="300"}
+
+
+## See R Handout! 
+
+::: columns
+::: column
+Let's practice in R!
+::: 
+::: 
+
+## Visualization: histogram 
+::: columns
+::: column
+```{r echo=TRUE, eval=FALSE}
+mtcars %>% 
+    ggplot(aes(mpg)) +
+    geom_histogram(bins = 5) +
+    theme_classic() 
+```
+::: 
+::: column
+```{r echo=FALSE, eval=TRUE}
+mtcars %>% 
+    ggplot(aes(mpg)) +
+    geom_histogram(bins = 5) +
+    theme_classic() 
+```
+::: 
+::: 
+
+
+## Visualization: boxplot 
+::: columns
+::: column
+```{r echo=TRUE, eval=FALSE}
+mtcars %>% 
+    ggplot(aes(mpg)) +
+    geom_boxplot() +
+    coord_flip() + 
+    theme_classic() 
+```
+::: 
+::: column
+```{r eval=TRUE, echo=FALSE, fig.height=2.5, fig.width=1.5}
+mtcars %>% 
+    ggplot(aes(mpg)) +
+    geom_boxplot() +
+    coord_flip() + 
+    theme_classic() 
+```
+::: 
+::: 
+
+## See R Handout! 
+
+::: columns
+::: column
+Let's practice in R!
+::: 
+::: 
+
+# Descriptive Statistics: categorical data
+
+## Displaying frequency and proportions
+::: columns
+::: column
+Gear ratio
+```{r echo=TRUE}
+mtcars %>% 
+    tabyl(gear) %>% 
+    adorn_totals("row") %>%
+    adorn_pct_formatting()
+```
+::: 
+::: column
+Automatic transmission
+```{r echo=TRUE}
+mtcars %>% 
+    tabyl(am) %>% 
+    adorn_totals("row") %>%
+    adorn_pct_formatting()
+```
+::: 
+::: 
+
+## Barplots 
+
+::: columns
+::: column
+```{r echo=TRUE, eval=FALSE}
+mtcars %>% 
+    ggplot(aes(gear)) + 
+    geom_bar() + 
+    theme_classic() 
+```
+::: 
+::: column
+```{r echo=FALSE, eval=TRUE}
+mtcars %>% 
+    ggplot(aes(gear)) + 
+    geom_bar() + 
+    theme_classic() 
+```
+::: 
+::: 
+
+## See R Handout! 
+
+::: columns
+::: column
+Let's practice in R!
+::: 
+::: 
+
+# Relationship between two variables 
+
+* categorical ~ categorical \>\> cross-tabulation (contigency table)
+* categorical ~ numerical \>\> grouped (stratified) summary measures 
+* numerical ~ numerical \>\> pearson's correlation (**r**)
+
+## categorical ~ categorical
+
+```{r echo=TRUE}
+mtcars %>% 
+    tabyl(gear, am) %>%  
+    adorn_totals(c("row", "col")) %>% 
+    adorn_percentages("row") %>% 
+    adorn_pct_formatting(digits = 1, affix_sign = FALSE) %>%
+    adorn_ns("front")
+```
+
+## categorical ~ numerical
+
+```{r echo=TRUE}
+mtcars %>% 
+    group_by(gear) %>% 
+    summarise(mean = mean(mpg), 
+              sd = sd(mpg))
+```
+
+## numerical ~ numerical
+
+* correlation value ranges from `-1` to `+1` 
+* value 0 = no correlation 
+* -1 = absolute negative association 
+* +1 = absoluate positive association 
+* around 0.4 = weak association
+* around 0.8 = strong association
+* **Assumption of linear association**
+
+```{r echo=TRUE}
+mtcars %>% 
+    summarise(correlation = cor(mpg, wt))
+```
+
+## Visualization: categorical ~ categorical
+::: columns
+::: column
+```{r fig.height=2.5}
+mtcars %>% 
+    # am is numeric so we use factor to indicate it as category
+    ggplot(aes(gear, fill = factor(am))) + 
+    geom_bar(position = "dodge") + 
+    theme_classic()
+```
+::: 
+::: column
+```{r fig.height=2.5}
+mtcars %>% 
+    # am is numeric so we use factor to indicate it as category
+    ggplot(aes(gear, fill = factor(am))) + 
+    geom_bar(position = "fill") + 
+    theme_classic()
+```
+::: 
+::: 
+
+## Visualization: categorical ~ numerical
+
+::: columns
+::: column
+```{r fig.height=2.5}
+mtcars %>% 
+    ggplot(aes(mpg, fill = factor(gear))) +
+    geom_density(alpha = 0.4) + 
+    theme_classic()
+```
+::: 
+::: column
+```{r fig.height=2.5}
+mtcars %>% 
+    ggplot(aes(x = factor(gear), y = mpg, fill = factor(gear))) +
+    geom_boxplot() + 
+    theme_classic()
+```
+::: 
+::: 
+
+## Visualization: numerical ~ numerical
+::: columns
+::: column
+```{r fig.height=2.5}
+mtcars %>% 
+    ggplot(aes(mpg, wt)) + 
+    geom_point() + 
+    theme_classic()
+```
+::: 
+::: column
+```{r fig.height=2.5}
+mtcars %>% 
+    ggplot(aes(wt, mpg)) + 
+    geom_point() + 
+    theme_classic()
+```
+::: 
+::: 
+
+## See R Handout! 
+
+::: columns
+::: column
+Let's practice in R!
+::: 
+::: 
+
+# Inferential Statistics 
+
+* Confidence Intervals (CI)
+* p-value 
+
+## Confidence Intervals 
+
+* If 100 similar studies were carried out, the true unknown value of the population will lie in the range of confidence intervals for 95 times. 
+* mostly commonly used cut-off = 95% 
+* If no true association exists, there is 5% chance that we will find a false association. 
+
+* more robust than a single estimate like means or proportion 
+
+## p-value 
+
+* how likely our data would have occured by random change 
+* decision on whether to reject null hypothesis; does not mean it's true. 
+* arbitarily set value = 0.05 or 5% \>\> .95 or 95% Confidence Interval 
+* largely depend on sample size: increasing sample size will likely lower p-value. 
+* **No p-value hacking!!**
+
+## statistical tests and data type
+
+* categorical ~ categorical \>\> cross-tabulation (contigency table)
+    - chi-squared test of independence (each cell must be greater than 5!)
+    - If not, use Fisher's exact test.
+    - if you have ordered data, use different tests. 
+* categorical ~ numerical \>\> grouped (stratified) summary measures 
+    - t-test (normal distribution, equal variance) to compare two means
+    - if not, use Wilcoxon tests. 
+* numerical ~ numerical \>\> pearson's correlation (**r**)
+    - to compare more than two groups, use ANOVA (same assumptions as t-test)
+    - if not, use Kruskal Wallis test. 
+
+Due to time constraint, we won't cover them in details. Interpretation of p-value is the same across all tests. 
+
+In addition, there are many other statistical tests that are out of scope for this workshop. 
+
+## See R Handout! 
+
+::: columns
+::: column
+Let's practice in R!
+::: 
+::: 
+
+# Confounding versus interaction 
+
+## Confounding variable
+
+* a variable that is associated with both your outcome (dependent variable) and predictors (independent variables)
+* Example: 
+    - coffee drinking is strongly associated with lung cancer. 
+    - seems like smokers are also heavey coffee drinker. 
+    - So smoking confounds the non-association between coffee drinking and lung cancer.
+    
+## Interaction
+
+* the effect of a variable on outcome depends on a second variable. 
+* Example: 
+    - type of food (icecream versus hotdogs) + condiments (chocolate sauce versus mustard)
+    - Do you prefer ketchup or chocolate sauce on your food?
+    - It actually depends on the type of food!
+    
+    
+## Confounding versus interaction
+
+- if there are confounders, leave confoundees (variables affected by confounders) out of your analysis
+- if there are interactions, account the interaction effect in your model. 
+
+How do you know which is which? 
+- you don't know in most cases
+- check during variable selection aka model building 
+- literature or previous knowledge 
+- biological pathways or plausibility 
+- pathway analysis like DAG or SEM?? 
+
+# Regression 
+
+* statistical model 
+    - to explore relationship between an outcome and predictors 
+    - to predict outcome based on the values of predictors 
+    
+* Jargons 
+    - outcome a.k.a dependent variable or `y`
+    - predictors a.k.a independent variables or `x`
+
+## Linear versus logistic 
+
+* linear regression: outcome is continus 
+* logistic regression: outcome is logical 
+
+## Visualizing linear relationship
+::: columns
+::: column
+```{r echo=TRUE, eval=FALSE}
+mtcars %>% 
+    ggplot(aes(mpg, wt)) +
+    geom_point() +
+    theme_classic()
+```
+::: 
+::: column
+```{r echo=FALSE, eval=TRUE}
+mtcars %>% 
+    ggplot(aes(mpg, wt)) +
+    geom_point() +
+    theme_classic()
+```
+::: 
+::: 
+
+## Adding a linear trend 
+::: columns
+::: column
+```{r echo=TRUE, eval=FALSE}
+mtcars %>% 
+    ggplot(aes(mpg, wt)) +
+    geom_point() +
+    geom_smooth(method = "lm", 
+                se = FALSE) + 
+    theme_classic()
+```
+::: 
+::: column
+```{r echo=FALSE, eval=TRUE}
+mtcars %>% 
+    ggplot(aes(mpg, wt)) +
+    geom_point() +
+    geom_smooth(method = "lm", 
+                se = FALSE) + 
+    theme_classic()
+```
+::: 
+::: 
+
+## Straight lines defined by two things
+
+**Intercept**
+The `y` value at the point when `x` is zero 
+
+**Slope**
+The amount `y` value increase if `x` value increases by one unit
+
+**Equation**
+
+$$y = intercept + slope * x$$
+
+## Running a linear model 
+
+```{r echo=TRUE}
+lm(mpg ~ wt, data = mtcars)
+```
+
+## Interpreting the model 
+
+```{r echo=FALSE}
+lm(mpg ~ wt, data = mtcars)
+```
+
+$$mpg = 37.285 + (-5.344) * wt$$
+
+> In every 1000 lbs increase, 5.344 mile per gallon will reduce. 
+
+## Adding a categorical variable 
+
+::: columns
+::: column
+Let's add `am` indicating automatic transmission by `0` and manual by `1`
+```{r echo=TRUE, eval=FALSE}
+mtcars %>% 
+    ggplot(aes(mpg, wt)) +
+    geom_point() +
+    geom_smooth(method = "lm", 
+                se = FALSE) + 
+    facet_grid(cols = vars(am)) +
+    theme_classic()
+```
+::: 
+::: column
+```{r echo=FALSE, eval=TRUE}
+mtcars %>% 
+    ggplot(aes(mpg, wt)) +
+    geom_point() +
+    geom_smooth(method = "lm", 
+                se = FALSE) + 
+    facet_grid(cols = vars(am)) +
+    theme_classic()
+```
+::: 
+::: 
+
+## Adding a categorical variable to the linear model 
+
+We need to convert `am` to a factor type to indicate as categorical data. Converting it as character also works. 
+
+```{r echo=TRUE}
+lm(mpg ~ wt + factor(am), data = mtcars)
+```
+
+## Interpreting a linear model with two predictors
+
+```{r echo=FALSE}
+lm(mpg ~ wt + factor(am), data = mtcars)
+```
+
+- while keeping the same weight, cars with manual transmission will reduce additional 0.02362 miles per gallon, compared to cars with automatic transmission. 
+
+## Assessing model fit 
+
+* coefficient of determination - R-squared \>\> just squaring Pearson's correlation `r`
+    - always increase when number of predictors increases - not good for multivariable model
+* adjusted R-squared 
+    - penalized for number of predictors 
+* RSE = residual standard error 
+    - typical difference between prediction and observed values
+* AIC 
+* BIC
+
+## Checking model fit
+
+```{r echo=TRUE}
+mpg_model <- lm(mpg ~ wt + factor(am), data = mtcars)
+summary(mpg_model)
+```
+
+## Checking model fit using glance()
+
+```{r echo=TRUE}
+library(broom)
+mpg_model %>% 
+    glance()
+```
+
+We look at sigma for RSE. The value of RSE is 3.10. 
+
+> typical difference between predicted mpg and observed mpg is 3.10 miles per gallon. 
+
+## Visualizing model fit
+
+```{r fig.height=2.5, fig.width=6}
+library(ggfortify)
+autoplot(mpg_model, which = 1:2)
+```
+
+
+## Visualizing model fit 2
+
+```{r fig.height=2.5, fig.width=6}
+library(ggfortify)
+autoplot(mpg_model, which = 3:4)
+```
+
+## What is next!
+
+* model diagnostics in details
+* quadratic or cubed model 
+* modelling on transformed data
+* prediction 
+* outliers, leverage or influential points 
+* model building or variable selection 
+
+## See R Handout! 
+
+::: columns
+::: column
+Let's practice in R!
+::: 
+::: 
+
+# Logistic Regression 
+
+* another type of linear regression 
+* The outcome variable is logical \>\> meaning 1 and 0. 
+
+We can still run a linear model on the binary outcome. 
+
+```{r echo=TRUE}
+lm(am ~ mpg, data = mtcars)
+```
+
+## Visualizing linear model on binary outcome 
+::: columns
+::: column
+Let's add `am` indicating automatic transmission by `0` and manual by `1`
+```{r echo=TRUE, eval=FALSE}
+mtcars %>% 
+    ggplot(aes(mpg, am)) +
+    geom_point() +
+    geom_smooth(method = "lm", 
+                se = FALSE) + 
+    theme_classic()
+```
+::: 
+::: column
+```{r echo=FALSE, eval=TRUE, message=FALSE}
+mtcars %>% 
+    ggplot(aes(mpg, am)) +
+    geom_point() +
+    geom_smooth(method = "lm", 
+                se = FALSE) + 
+    theme_classic()
+```
+::: 
+::: 
+
+## Odds Ratio 
+
+$$Odds Ratio = \frac{Probability\_of\_something\_happening} {probability\_of\_something\_not\_happening}$$
+
+$$Odds Ratio = \frac{probability} {(1-probability)}$$
+
+$$Odds Ratio = \frac{0.25} {(1-0.25)} = \frac{1} {3}$$ 
+
+## Running a logistic regression 
+
+```{r echo=TRUE}
+logm1 <- glm(am ~ mpg, data = mtcars, family = binomial)
+summary(logm1)
+```
+
+## Displaying coefficient estimates
+
+```{r echo=TRUE}
+logm1 %>% 
+    tidy()
+```
+
+With 1 mpg increase, there is 0.307 log odds chance of being manual. 
+
+> it is hard to understand log odds scale without visualization. 
+
+## Calculating odds ratios
+
+```{r echo=TRUE}
+cbind(
+    exp(coef(logm1)), 
+    exp(confint(logm1))
+)
+```
+
+
+## See R Handout! 
+
+::: columns
+::: column
+Let's practice in R!
+::: 
+::: 
